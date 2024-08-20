@@ -1,4 +1,3 @@
-// FRUIT 
 function Fruit(x,y,speed,color,size,fruit,slicedFruit1,slicedFruit2,name){
     this.x = x;
     this.y = y;
