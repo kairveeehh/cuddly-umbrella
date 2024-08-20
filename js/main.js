@@ -1,10 +1,3 @@
-const singlePlayerBtn = document.getElementById('singlePlayer');
-const multiPlayerBtn = document.getElementById('multiPlayer');
-const fruitlogo = document.getElementById('fruitlogo');
-
-// GENERAL VARIABLES
-
-
 var cnv;
 var score, points = 0;
 var lives, x = 0;
@@ -30,7 +23,6 @@ function preload(){
     missed = loadSound('sounds/missed.mp3');
     start = loadSound('sounds/start.mp3');
     over = loadSound('sounds/over.mp3');
-    
 
     // LOAD IMAGES
     for(var i=0; i<fruitsList.length-1; i++){
@@ -46,7 +38,7 @@ function preload(){
     for(var i=0; i<3; i++){
         livesImgs2[i] = loadImage('images/xx'+ (i+1) + '.png');
     }
-    bg = loadImage('images/GameBg_2.png');
+    bg = loadImage('images/background.jpg');
     foregroundImg = loadImage('images/home-mask.png');
     fruitLogo = loadImage('images/fruit.png');
     ninjaLogo = loadImage('images/ninja.png');
@@ -54,12 +46,11 @@ function preload(){
     newGameImg = loadImage('images/new-game.png');
     fruitImg = loadImage('images/fruitMode.png');
     gameOverImg = loadImage('images/game-over.png');
-    cut = loadImage('images/cut.png');
 }
 
 function setup(){
-    
-    cnv = createCanvas(1500,720);
+
+    cnv = createCanvas(800,635);
     sword = new Sword(color("#FFFFFF"));
     frameRate(60);
     score = 0;
@@ -69,17 +60,17 @@ function setup(){
 
 function draw(){
     clear();
-    /*image(this.foregroundImg, 0, 0, 800, 350);
+    background(bg);
+
+    image(this.foregroundImg, 0, 0, 800, 350);
     image(this.fruitLogo, 40, 20, 358, 195);
     image(this.ninjaLogo, 420, 50, 318, 165);
-    image(this.newGameImg, 310, 360, 200, 200);*/
-    
-    
-    //cnv.mouseClicked(check);
-    if(isPlay){
-        background(bg);
-        game();
+    image(this.newGameImg, 310, 360, 200, 200);
+    image(this.fruitImg, 365, 415, 90, 90);
 
+    cnv.mouseClicked(check);
+    if(isPlay){
+        game();
     }
     //     if (timerValue >= 60) {
     //         text("0:" + timerValue, width / 2, height / 2);
@@ -88,16 +79,7 @@ function draw(){
     //         text('0:0' + timerValue, width / 2, height / 2);
     //     }
 }
-singlePlayerBtn.addEventListener('click', function(){
-    isPlay=true;
-    menuOff();
-    draw();
-});
-function menuOff(){
-    singlePlayerBtn.style.display="none";
-    multiPlayerBtn.style.display="none";
-    fruitlogo.style.display="none";
-}
+
 function check(){ // Check for game start
     if( !isPlay && (mouseX > 300 && mouseX < 520 && mouseY > 350 && mouseY < 550)){
         start.play();
@@ -111,7 +93,7 @@ function game(){
     sword.swipe(mouseX, mouseY);
     sword.update();
     sword.draw();
-  
+
     if(frameCount % 5 === 0){
         if(noise(frameCount) > 0.69){
             fruit.push(randomFruit()); // Display new fruit
@@ -142,7 +124,6 @@ function game(){
                 points++;
                 fruit[i].update();
                 fruit[i].draw();
-                
             }
         }
     }
@@ -153,9 +134,6 @@ function game(){
     score += points;
     drawScore();
     drawLives();  
-}
-function drawCut(){
-    
 }
 
 function drawLives(){
@@ -188,7 +166,7 @@ function gameOver(){
     over.play();
     clear();
     background(bg);
-    image(this.gameOverImg, 500, 360, 490, 85);
+    image(this.gameOverImg, 155, 260, 490, 85);
     lives = 0;
     // button = createButton("Reset");
     // button.position(450, 350);
