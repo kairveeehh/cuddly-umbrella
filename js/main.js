@@ -129,7 +129,7 @@ let splashTimer = 6000; // Adjust this value to change the display duration
 function showSplash(fruitName, x, y) {
     let splashImg = splashImgs[fruitsList.indexOf(fruitName)];
     if (splashImg && splashTimer > 0) {
-        image(splashImg, x, y, 200, 200);
+        image(splashImg, x, y, 250, 250);
         splashTimer--; // Decrease the timer on each frame
     }
 }
