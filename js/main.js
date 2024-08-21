@@ -6,39 +6,34 @@ var gravity = 0.1;
 var sword;
 var fruit = [];
 var fruitsList = ['apple', 'banana', 'peach', 'strawberry', 'watermelon', 'boom'];
-var fruitsImgs = [], slicedFruitsImgs = [];
+var fruitsImgs = [], slicedFruitsImgs = [], splashImgs = [];
 var livesImgs = [], livesImgs2 = [];
-var boom, spliced, missed, over, start; // sounds
-// var button, startButton;
-// var timer;
-// var counter = 60;
-// var seconds, minutes;
-// var timerValue = 60;
+var boom, spliced, missed, over, start;
 
-function preload(){
-
-    // LOAD SOUNDS
+function preload() {
     boom = loadSound('sounds/boom.mp3');
     spliced = loadSound('sounds/splatter.mp3');
     missed = loadSound('sounds/missed.mp3');
     start = loadSound('sounds/start.mp3');
     over = loadSound('sounds/over.mp3');
 
-    // LOAD IMAGES
-    for(var i=0; i<fruitsList.length-1; i++){
-        slicedFruitsImgs[2*i] = loadImage('images/'+ fruitsList[i] + '-1.png');
-        slicedFruitsImgs[2*i + 1] = loadImage('images/'+ fruitsList[i] + '-2.png');
+    for (var i = 0; i < fruitsList.length - 1; i++) {
+        slicedFruitsImgs[2 * i] = loadImage('images/' + fruitsList[i] + '-1.png');
+        slicedFruitsImgs[2 * i + 1] = loadImage('images/' + fruitsList[i] + '-2.png');
     }
-    for(var i=0; i<fruitsList.length; i++){
-        fruitsImgs[i] = loadImage('images/'+ fruitsList[i] + '.png');
+    for (var i = 0; i < fruitsList.length; i++) {
+        fruitsImgs[i] = loadImage('images/' + fruitsList[i] + '.png');
+        if (fruitsList[i] != 'boom') {
+            splashImgs[i] = loadImage('images/' + fruitsList[i] + '-splash.png');
+        }
     }
-    for(var i=0; i<3; i++){
-        livesImgs[i] = loadImage('images/x'+ (i+1) + '.png');
+    for (var i = 0; i < 3; i++) {
+        livesImgs[i] = loadImage('images/x' + (i + 1) + '.png');
     }
-    for(var i=0; i<3; i++){
-        livesImgs2[i] = loadImage('images/xx'+ (i+1) + '.png');
+    for (var i = 0; i < 3; i++) {
+        livesImgs2[i] = loadImage('images/xx' + (i + 1) + '.png');
     }
-    bg = loadImage('images/background.jpg');
+    bg = loadImage('images/gameBg_2.png');
     foregroundImg = loadImage('images/home-mask.png');
     fruitLogo = loadImage('images/fruit.png');
     ninjaLogo = loadImage('images/ninja.png');
@@ -48,17 +43,15 @@ function preload(){
     gameOverImg = loadImage('images/game-over.png');
 }
 
-function setup(){
-
-    cnv = createCanvas(800,635);
+function setup() {
+    cnv = createCanvas(800, 635);
     sword = new Sword(color("#FFFFFF"));
     frameRate(60);
     score = 0;
     lives = 6;
-
 }
 
-function draw(){
+function draw() {
     clear();
     background(bg);
 
@@ -69,135 +62,108 @@ function draw(){
     image(this.fruitImg, 365, 415, 90, 90);
 
     cnv.mouseClicked(check);
-    if(isPlay){
+    if (isPlay) {
         game();
     }
-    //     if (timerValue >= 60) {
-    //         text("0:" + timerValue, width / 2, height / 2);
-    //     }
-    //     if (timerValue < 60) {
-    //         text('0:0' + timerValue, width / 2, height / 2);
-    //     }
 }
 
-function check(){ // Check for game start
-    if( !isPlay && (mouseX > 300 && mouseX < 520 && mouseY > 350 && mouseY < 550)){
+function check() {
+    if (!isPlay && (mouseX > 300 && mouseX < 520 && mouseY > 350 && mouseY < 550)) {
         start.play();
         isPlay = true;
     }
 }
 
-function game(){
+function game() {
     clear();
     background(bg);
     sword.swipe(mouseX, mouseY);
     sword.update();
     sword.draw();
 
-    if(frameCount % 5 === 0){
-        if(noise(frameCount) > 0.69){
-            fruit.push(randomFruit()); // Display new fruit
+    if (frameCount % 5 === 0) {
+        if (noise(frameCount) > 0.69) {
+            fruit.push(randomFruit());
         }
     }
-    points = 0
-    for(var i=fruit.length-1; i>=0; i--){
+    points = 0;
+    for (var i = fruit.length - 1; i >= 0; i--) {
         fruit[i].update();
         fruit[i].draw();
-        if(!fruit[i].visible){
-            if(!fruit[i].sliced && fruit[i].name != 'boom'){ // Missed fruit
+        if (!fruit[i].visible) {
+            if (!fruit[i].sliced && fruit[i].name != 'boom') {
                 image(this.livesImgs2[0], fruit[i].x, fruit[i].y - 120, 50, 50);
                 missed.play();
                 lives--;
                 x++;
             }
-            if(lives < 1 ){ // Check for lives
+            if (lives < 1) {
                 gameOver();
             }
-            fruit.splice(i,1);
-        }else{
-            if(fruit[i].sliced && fruit[i].name == 'boom'){ // Check for bomb
-                boom.play()
+            fruit.splice(i, 1);
+        } else {
+            if (fruit[i].sliced && fruit[i].name == 'boom') {
+                boom.play();
                 gameOver();
             }
-            if(sword.checkSlice(fruit[i]) && fruit[i].name != 'boom'){ // Sliced fruit
+            if (sword.checkSlice(fruit[i]) && fruit[i].name != 'boom') {
                 spliced.play();
+                showSplash(fruit[i].name, fruit[i].x, fruit[i].y);
                 points++;
                 fruit[i].update();
                 fruit[i].draw();
             }
         }
     }
-    if(frameCount % 2 === 0 ){
+    if (frameCount % 2 === 0) {
         sword.update();
     }
     sword.draw();
     score += points;
     drawScore();
-    drawLives();  
+    drawLives();
 }
 
-function drawLives(){
+let splashTimer = 6000; // Adjust this value to change the display duration
 
+function showSplash(fruitName, x, y) {
+    let splashImg = splashImgs[fruitsList.indexOf(fruitName)];
+    if (splashImg && splashTimer > 0) {
+        image(splashImg, x, y, 200, 200);
+        splashTimer--; // Decrease the timer on each frame
+    }
+}
+
+
+function drawLives() {
     image(this.livesImgs[0], width - 110, 20, livesImgs[0].width, livesImgs[0].height);
     image(this.livesImgs[1], width - 88, 20, livesImgs[1].width, livesImgs[1].height);
     image(this.livesImgs[2], width - 60, 20, livesImgs[2].width, livesImgs[2].height);
-    if(lives <= 2 ){
+    if (lives <= 2) {
         image(this.livesImgs2[0], width - 110, 20, livesImgs2[0].width, livesImgs2[0].height);
     }
-    if(lives <= 1){
+    if (lives <= 1) {
         image(this.livesImgs2[1], width - 88, 20, livesImgs2[1].width, livesImgs2[1].height);
     }
-    if(lives === 0){
+    if (lives === 0) {
         image(this.livesImgs2[2], width - 60, 20, livesImgs2[2].width, livesImgs2[2].height);
     }
 }
 
-function drawScore(){
+function drawScore() {
     image(this.scoreImg, 10, 10, 40, 40);
     textAlign(LEFT);
     noStroke();
-    fill(255,147,21);
+    fill(255, 147, 21);
     textSize(50);
     text(score, 50, 50);
 }
 
-function gameOver(){
+function gameOver() {
     noLoop();
     over.play();
     clear();
     background(bg);
     image(this.gameOverImg, 155, 260, 490, 85);
     lives = 0;
-    // button = createButton("Reset");
-    // button.position(450, 350);
-    // button.mousePressed(resetSketch);
-    console.log("lost");
 }
-
-// timer = createP("timer");
-// setInterval(timeIt, 1000);
-
-// textAlign(CENTER);
-// setInterval(timeIt, 1000);
-
-//   if (timerValue == 0) {
-//     text('game over', width / 2, height / 2 + 15);
-//   }
-// fruit.push(new Fruit(random(width),height,3,"#FF00FF",random()));
-// function resetSketch(){
-//     clear();
-//     background(bg);
-//     game();
-// }
-// function timeIt() {
-//     console.log("time");
-//     if (timerValue > 0) {
-//         console.log(timerValue);
-//         timerValue--;
-//         textAlign(CENTER);
-//         noStroke();
-//         fill(255,147,21);
-//         textSize(50);
-//         text(timerValue, 200, 250);
-//     }
-//   }

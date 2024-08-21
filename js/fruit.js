@@ -14,15 +14,16 @@ function Fruit(x,y,speed,color,size,fruit,slicedFruit1,slicedFruit2,name){
     this.visible = true;
 }
 
-Fruit.prototype.draw = function(){
+Fruit.prototype.draw = function() {
     fill(this.color);
-    if(this.sliced && this.name != 'boom'){ // Draw sliced fruit
-        image(this.slicedFruit1, this.x - 25, this.y, this.size, this.size);
-        image(this.slicedFruit2, this.x + 25, this.y, this.size, this.size);
-    }else{ // Draw fruit
+    if (this.sliced && this.name != 'boom') { // Draw sliced fruit
+        image(this.slicedFruit1, this.x - this.size / 2, this.y, this.size, this.size);
+        image(this.slicedFruit2, this.x + this.size / 2, this.y, this.size, this.size);
+    } else { // Draw fruit
         image(this.fruit, this.x, this.y, this.size, this.size);
     }
 };
+
 
 Fruit.prototype.update = function(){
     if(this.sliced && this.name != 'boom'){
@@ -42,7 +43,7 @@ Fruit.prototype.update = function(){
 function randomFruit(){ // Create randon fruit
     var x = random(width);
     var y = height;
-    var size = noise(frameCount)*20 + 40;
+    var size = 90;
     var col = color(random(255),random(255),random(255));
     var speed = random(3,5);
     var idx = round(random(0,fruitsList.length-1));
